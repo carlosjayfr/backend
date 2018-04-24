@@ -2,6 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 
 var Proveedor = require('../models/proveedor.js'); //Conectamos la ruta con el modelo
+var autentoken = require('../middleware/autentoken.js');
 
 var app = express();
 
@@ -86,7 +87,7 @@ app.put('/:id', function(req,res,next){
     });
 
 });
-
+//Al pasar el parámetro autentoken.verificarToken comprueba que el token es correcto y que pertenece a ese usuario
 app.delete('/:id', function(req,res,error){
 
     Proveedor.findByIdAndRemove(req.params.id, function(err, datos){

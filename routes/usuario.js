@@ -87,4 +87,18 @@ app.put('/:id', (req, res, next)=>{
     })
 });
 
+app.delete('/:id', function(req,res,error){
+
+    Usuario.findByIdAndRemove(req.params.id, function(err, datos){
+        if (err) return next(err);
+        var mensaje = 'El usuario fue eliminado'
+        res.status(201).json({
+            ok: 'true',
+            mensaje: mensaje
+        });
+
+    });
+
+});
+
 module.exports = app;
