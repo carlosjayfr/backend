@@ -8,7 +8,10 @@ var app = express();
 
 app.get('/', (req,res,next)=> {
 
-    Proveedor.find({}).exec((err, proveedores)=>{
+    var desde = req.query.desde;
+    desde = Number(desde);
+
+    Proveedor.find({}).skip(desde).limit(5).exec((err, proveedores)=>{
         if (err){
             return res.status(500).json({
                 ok: false,
@@ -16,10 +19,15 @@ app.get('/', (req,res,next)=> {
                 errores: err
             })
         }
+
+    Proveedor.count({}, (err,totales)=>{
         res.status(200).json({
             ok: true,
-            proveedores: proveedores
+            proveedores: proveedores,
+            totales: totales
         });
+    });
+
        
 
     });

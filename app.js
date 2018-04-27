@@ -5,7 +5,8 @@ var factura = require('./routes/factura.js');
 var usuario = require('./routes/usuario.js');
 var login = require('./routes/login.js');
 var cliente = require('./routes/cliente.js');
-var presupuesto = require('./routes/presupuesto.js')
+var presupuesto = require('./routes/presupuesto.js');
+var sesion = require('./routes/sesion.js');
 
 var app = express();
 
@@ -35,6 +36,7 @@ app.use('/usuario',usuario);
 app.use('/login',login);
 app.use('/cliente',cliente);
 app.use('/presupuesto',presupuesto);
+app.use('/sesion',sesion);
 
 app.listen(3000, function(){
     console.log('Servidor Ok en puerto 3000');
