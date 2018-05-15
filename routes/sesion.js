@@ -10,7 +10,8 @@ app.post('/', function(req,res,next){
     var sesion = new Sesion({
         nombre: body.nombre,
         login: body.login,
-        logout: body.logout
+        logout: body.logout,
+        duracion: body.duracion
 
     });
 

@@ -7,7 +7,78 @@ var app = express();
 
 app.get('/', (req,res,next)=> {
 
+
     Cliente.find({}).exec((err, clientes)=>{
+        if (err){
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error acceso DB',
+                errores: err
+            })
+        }
+        res.status(200).json({
+            ok: true,
+            clientes: clientes
+        });
+       
+
+    });
+
+});
+
+
+app.get('/nombre/:nombre/', (req,res,next)=> {
+
+    var nombre = req.params.nombre;
+
+    Cliente.find({nombre:{$regex:nombre,$options:'i'}}).exec((err, clientes)=>{
+        if (err){
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error acceso DB',
+                errores: err
+            })
+        }
+        res.status(200).json({
+            ok: true,
+            clientes: clientes
+        });
+       
+
+    });
+
+});
+
+app.get('/localidad/:localidad/', (req,res,next)=> {
+
+    var localidad = req.params.localidad;
+
+    Cliente.find({localidad:{$regex:localidad,$options:'i'}}).exec((err, clientes)=>{
+        if (err){
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error acceso DB',
+                errores: err
+            })
+        }
+        res.status(200).json({
+            ok: true,
+            clientes: clientes
+        });
+       
+
+    });
+
+});
+
+app.get('/mixto/:nombre/:localidad/', (req,res,next)=> {
+
+    var nombre = req.params.nombre
+    var localidad = req.params.localidad;
+
+    // Cliente.find({$or:[{nombre:{$regex:nombre,$options:'i'}},{localidad:{$regex:localidad,$options:'i'}}]})
+    Cliente.find({nombre:{$regex:nombre,$options:'i'},localidad:{$regex:localidad,$options:'i'}})
+           .exec((err, clientes)=>{
         if (err){
             return res.status(500).json({
                 ok: false,

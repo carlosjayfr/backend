@@ -1,14 +1,14 @@
 var express = require('express');
 var mongoose = require('mongoose');
 
-var Presupuesto = require('../models/presupuesto.js'); //Conectamos la ruta con el modelo
+var Presupuesto = require('../models/presupuesto.js');
 
 var app = express();
 
-app.get('/', (req,res,next)=> {
+app.get('/', (req, res, next) => {
 
     Presupuesto.find({}).exec((err, presupuestos)=>{
-        if (err){
+        if(err){
             return res.status(500).json({
                 ok: false,
                 mensaje: 'Error acceso DB',
@@ -18,17 +18,15 @@ app.get('/', (req,res,next)=> {
         res.status(200).json({
             ok: true,
             presupuestos: presupuestos
-        });
-       
-
+        })
     });
 
 });
 
-app.get('/:id',function(req,res,next){
+app.get('/cliente', (req, res, next) => {
 
-    Presupuesto.findById(req.params.id,(err,presupuestos)=>{
-        if (err){
+    Presupuesto.aggregate([{$group:{_id:{cliente:"$cliente"},total:{$sum:"$total"}}}]).exec((err, datos)=>{
+        if(err){
             return res.status(500).json({
                 ok: false,
                 mensaje: 'Error acceso DB',
@@ -37,69 +35,85 @@ app.get('/:id',function(req,res,next){
         }
         res.status(200).json({
             ok: true,
-            presupuestos: presupuestos
-        });
+            datos: datos
+        })
     });
 
 });
 
-app.post('/',(req,res)=>{ //En el cuerpo de las peticiones res que hagamos vamos a mandar un json
+app.get('/:id', function(req, res, next){
+    
+    Presupuesto.findById(req.params.id, (err, presupuesto)=>{
+        if(err){
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error acceso DB',
+                errores: err
+            })
+        }
+        res.status(200).json({
+            ok: true,
+            presupuesto: presupuesto
+        })
+    })  
+});
+
+
+app.post('/', (req, res)=>{
 
     var body = req.body;
+
     var presupuesto = new Presupuesto({
-        presupuesto: body.presupuesto,
+        cliente: body.cliente,
         cif: body.cif,
-        base: body.base,
-        tipo: body.tipo,
-        importe: body.importe,
-        total: body.total,
-        irpf: body.irpf,
-        retencion: body.retencion,
         fecha: body.fecha,
-        fechaRegistro:body.fechaRegistro,
-        concepto: body.concepto
+        items: body.items,
+        suma: body.suma,
+        tipo: body.tipo,
+        iva: body.iva,
+        total: body.total
     });
 
-   presupuesto.save((err, presupuestoGuardado)=>{ //Guardar en la base de datos el objeto
-       if (err){
-           return res.status(400).json({
-               ok: false,
-               mensaje: 'Error al crear el presupuesto',
-               errores: err
-           });
-       }
-       res.status(200).json({
-            ok:true,
-            presupuesto: presupuestoGuardado
+    presupuesto.save((err, presupuestoGuardado)=>{
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'Error al crear el presupuesto',
+                errores: err
+            })
+        }
 
-       });
-   });
-    
+        res.status(200).json({
+            ok: true,
+            presupuesto: presupuestoGuardado
+        })
+    });
+
+
 });
 
-app.put('/:id', function(req,res,next){
+app.put('/:id', function(req, res, next){
 
-    Presupuesto.findByIdAndUpdate(req.params.id, req.body, function(err,datos){ //Params es el paramtero id
+    Presupuesto.findByIdAndUpdate(req.params.id, req.body, function(err, datos){
         if (err) return next(err);
         res.status(201).json({
             ok: 'true',
-            mensaje: 'Presupuesto actualizada'
+            mensaje: 'Presupuesto actualizado'
         });
     });
 
 });
 
-app.delete('/:id', function(req,res,error){
+app.delete('/:id', function(req, res, error){
 
     Presupuesto.findByIdAndRemove(req.params.id, function(err, datos){
         if (err) return next(err);
-        var mensaje = 'Presupuesto ' + datos.cif + ' eliminado'
-        res.status(201).json({
+        var mensaje = 'Presupuesto eliminado';
+        res.status(200).json({
             ok: 'true',
             mensaje: mensaje
-        });
-
-    });
+        }); 
+    })
 
 });
 

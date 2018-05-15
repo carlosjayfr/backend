@@ -1,21 +1,22 @@
 var mongoose = require('mongoose');
-var unique = require('mongoose-unique-validator');
+//var unique = require('mongoose-unique-validator');
+var autoIncrement = require('mongoose-auto-increment');
 
+var connection = mongoose.createConnection('mongodb://localhost:27017/erp');
+autoIncrement.initialize(connection);
 
 var PresupuestoSchema = new mongoose.Schema({
-    presupuesto: String, //Propiedades que tiene el modelo
-    cif: { type:String },
-    base: Number,
-    tipo: Number,
-    importe: String,
-    total: String,
-    irpf: String,
-    retencion: Boolean,
+    cliente: String,
+    cif: String,
     fecha: String,
-    fechaRegistro:Date,
-    concepto: String
-});
+    items: Array,
+    suma: Number,
+    tipo: Number,
+    iva: Number,
+    total: Number
+})
 
-// PresupuestoSchema.plugin(unique, {message: 'El cif introducido ya existe'});
+//PresupuestoSchema.plugin(unique, { message: 'El cif introducido ya existe'});
+PresupuestoSchema.plugin(autoIncrement.plugin, { model: 'Presupuesto', field: 'numero', startAt: 1} );
 
-module.exports = mongoose.model('Presupuesto',PresupuestoSchema);
+module.exports = mongoose.model('Presupuesto', PresupuestoSchema);
